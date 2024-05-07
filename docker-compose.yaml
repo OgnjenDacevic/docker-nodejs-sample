@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  app:
+    container_name: devops-workshop-app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: development
+    image: devops-workshop-app-image
+    restart: always
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=todo_items
+    ports:
+      - "3000:3000"
+  postgres-db:
+    container_name: devops-workshop-db
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todo_items 
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres-data:
