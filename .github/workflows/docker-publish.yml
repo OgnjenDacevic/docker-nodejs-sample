@@ -21,6 +21,16 @@ env:
 
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Semantic Version
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: paulhatch/semantic-version@v3.2
+        with:
+          pattern: '^v(\d+\.\d+\.\d+)$'
+          value: ${{ github.ref_name }}
+
   build:
 
     runs-on: ubuntu-latest
@@ -34,14 +44,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Validate Semantic Version
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: paulhatch/semantic-version@v3.2
-        with:
-          pattern: '^v(\d+\.\d+\.\d+)$'
-          value: ${{ github.ref_name }}
-        continue-on-error: false
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
