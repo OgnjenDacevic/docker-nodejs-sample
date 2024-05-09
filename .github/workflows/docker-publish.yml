@@ -41,6 +41,7 @@ jobs:
         with:
           pattern: '^v(\d+\.\d+\.\d+)$'
           value: ${{ github.ref_name }}
+        continue-on-error: false
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
