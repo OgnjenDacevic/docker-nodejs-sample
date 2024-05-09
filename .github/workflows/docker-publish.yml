@@ -34,7 +34,7 @@ jobs:
           fi
 
   build:
-
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: read
