@@ -5,12 +5,12 @@ module "vpc" {
   cidr = module.subnet_addrs.base_cidr_block
   
   azs             = data.aws_availability_zones.available.names
-  private_subnets = [module.subnet_addrs.networks[3].cidr_block,
-                     module.subnet_addrs.networks[4].cidr_block,
-                     module.subnet_addrs.networks[5].cidr_block]
-  public_subnets  = [module.subnet_addrs.networks[0].cidr_block,
-                     module.subnet_addrs.networks[1].cidr_block,
-                     module.subnet_addrs.networks[2].cidr_block]
+  private_subnets = [lookup(module.subnet_addrs.network_cidr_blocks, "Private subnet 1", ""),
+                     lookup(module.subnet_addrs.network_cidr_blocks, "Private subnet 2", ""),
+                     lookup(module.subnet_addrs.network_cidr_blocks, "Private subnet 3", "")]
+  public_subnets  = [lookup(module.subnet_addrs.network_cidr_blocks, "Public subnet 1", ""),
+                     lookup(module.subnet_addrs.network_cidr_blocks, "Public subnet 2", ""),
+                     lookup(module.subnet_addrs.network_cidr_blocks, "Public subnet 3", "")]
 
   enable_nat_gateway = true
   single_nat_gateway = true
