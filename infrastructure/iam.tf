@@ -12,7 +12,13 @@ module "iam_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "ecr:GetAuthorizationToken",
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
                 "ecr:BatchGetImage",
                 "ecr:InitiateLayerUpload",
                 "ecr:UploadLayerPart",
@@ -22,7 +28,7 @@ module "iam_policy" {
                 "ecr:PutImage",
                 "ecr:DescribeImages"
             ],
-            "Resource": "*"
+            "Resource": "${module.ecr.repository_arn}"
         },
         {
             "Effect": "Allow",
@@ -51,6 +57,7 @@ module "iam-assumable-role-with-oidc" {
   create_role = true
   role_name = "Ognjen-github-actions-role"
   provider_url = module.iam_github_oidc_provider.url
+
 
   oidc_subjects_with_wildcards = ["repo:OgnjenDacevic/docker-nodejs-sample*"]
   role_policy_arns = [module.iam_policy.arn]
