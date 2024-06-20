@@ -1,3 +1,26 @@
+resource "helm_release" "bitnami_psql" {
+  count      = 1
+  name       = "bitnami_postgresql"
+  chart      = "postgresql"
+  repository = "https://charts.bitnami.com/bitnami"
+  version    = "10.3.11"
+
+  set {
+    name  = "postgresqlPassword"
+    value = "your_password"
+  }
+
+  set {
+    name  = "postgresqlUsername"
+    value = "your_username"
+  }
+
+  set {
+    name  = "postgresqlDatabase"
+    value = "your_database"
+  }
+}
+
 resource "helm_release" "alb_controller" {
   count      = 1
   name       = "aws-load-balancer-controller"
@@ -40,5 +63,4 @@ resource "helm_release" "alb_controller" {
     name  = "enableServiceMutatorWebhook"
     value = "false"
   }
-
 }
