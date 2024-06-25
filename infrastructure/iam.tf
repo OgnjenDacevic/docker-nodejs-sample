@@ -53,19 +53,18 @@ module "iam_github_oidc_provider" {
 
 module "iam-assumable-role-with-oidc" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "5.39.1"
   create_role = true
   role_name = "Ognjen-github-actions-role"
   provider_url = module.iam_github_oidc_provider.url
 
 
-  oidc_subjects_with_wildcards = ["repo:OgnjenDacevic/docker-nodejs-sample*"]
+  oidc_subjects_with_wildcards = ["repo:OgnjenDacevic/docker-nodejs-sample:*"]
   role_policy_arns = [module.iam_policy.arn]
+  oidc_fully_qualified_audiences = ["sts.amazonaws.com"]
 }
 
 module "iam_role_for_service_accounts_eks" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.39.1"
   role_name = "Ognjen-role-for-load-balancer-controller"
 
   attach_load_balancer_controller_policy = true

@@ -6,28 +6,30 @@ resource "helm_release" "bitnami_psql" {
   version    = "10.3.11"
 
   set {
-    name  = "postgresqlPassword"
-    value = "your_password"
+    name  = "auth.username"
+    value = lookup(jsondecode(sensitive(data.aws_secretsmanager_secret_version.current.secret_string)), "username", "")
   }
 
   set {
-    name  = "postgresqlUsername"
-    value = "your_username"
+    name  = "auth.password"
+    value = lookup(jsondecode(sensitive(data.aws_secretsmanager_secret_version.current.secret_string)), "password", "")
   }
 
   set {
-    name  = "postgresqlDatabase"
-    value = "your_database"
+    name  = "auth.database"
+    value = lookup(jsondecode(sensitive(data.aws_secretsmanager_secret_version.current.secret_string)), "dbname", "")
   }
 }
 
 resource "helm_release" "alb_controller" {
+  depends_on      = [module.eks]
   count      = 1
   name       = "aws-load-balancer-controller"
   chart      = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
-  version    = "1.5.3"
+  version    = "1.7.2"
   namespace  = "load-balancer-service-account"
+  create_namespace = true
 
   set {
     name  = "clusterName"
@@ -60,7 +62,12 @@ resource "helm_release" "alb_controller" {
   }
 
   set {
-    name  = "enableServiceMutatorWebhook"
-    value = "false"
+    name  = "region"
+    value = var.default_region
+  }
+
+  set {
+    name  = "vpcId"
+    value = module.vpc.vpc_id
   }
 }

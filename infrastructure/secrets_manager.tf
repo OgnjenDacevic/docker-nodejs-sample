@@ -1,7 +1,7 @@
 module "secrets_manager" {
   source = "terraform-aws-modules/secrets-manager/aws"
 
-  name = "ognjen/postgres/credentials"
+  name = "ognjen/postgres/secrets"
 
   ignore_secret_changes = true
   secret_string = jsonencode({
@@ -14,5 +14,6 @@ module "secrets_manager" {
 
 
 data "aws_secretsmanager_secret_version" "current" {
+  depends_on = [ module.secrets_manager ]
   secret_id = module.secrets_manager.secret_id
 }
