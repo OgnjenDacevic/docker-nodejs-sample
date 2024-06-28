@@ -72,7 +72,22 @@ module "iam_role_for_service_accounts_eks" {
   oidc_providers = {
     github = {
       provider_arn = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["load-balancer-service-account:${var.service_account_name}"]
+      namespace_service_accounts = ["eks-load-balancer-controller:${var.service_account_name}"]
+    }
+  }
+}
+
+
+module "iam_csi_driver_irsa" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  role_name = "ognjen-csi-irsa"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
     }
   }
 }

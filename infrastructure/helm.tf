@@ -1,9 +1,11 @@
-resource "helm_release" "bitnami_psql" {
-  count      = 1
-  name       = "bitnami_postgresql"
-  chart      = "postgresql"
+resource "helm_release" "bitnamipsql" {
+  name       = "ognjen-postgresql"
   repository = "https://charts.bitnami.com/bitnami"
-  version    = "10.3.11"
+  chart      = "postgresql"
+  version    = "~> 15.5.0"
+  create_namespace = true
+  namespace = "vegait-training"
+  
 
   set {
     name  = "auth.username"
@@ -19,16 +21,59 @@ resource "helm_release" "bitnami_psql" {
     name  = "auth.database"
     value = lookup(jsondecode(sensitive(data.aws_secretsmanager_secret_version.current.secret_string)), "dbname", "")
   }
+  set {
+    name  = "primary.persistence.enabled"
+    value = true
+  }
+  set {
+    name  = "primary.persistence.volumeName"
+    value = "ognjen-pvc"
+  }
+  set {
+    name = "primary.persistence.accessModes[0]"
+    value = "ReadWriteOnce"
+  }
+  set {
+    name = "containerPorts.postgresql"
+    value = lookup(jsondecode(sensitive(data.aws_secretsmanager_secret_version.current.secret_string)), "port", "")
+  }
+  set {
+    name = "primary.persistence.storageClass"
+    value = kubernetes_storage_class.eks_storage_class.metadata[0].name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = false
+  }
+
+  set {
+    name = "primary.persistence.size"
+    value = "8Gi" 
+  }
+}
+
+
+
+resource "kubernetes_storage_class" "eks_storage_class" {
+  metadata {
+    name = "ognjen-storage-class"
+  }
+  storage_provisioner    = "ebs.csi.aws.com"
+  volume_binding_mode    = "WaitForFirstConsumer"
+  allow_volume_expansion = true
+  parameters = {
+    "encrypted" = "true"
+  }
 }
 
 resource "helm_release" "alb_controller" {
-  depends_on      = [module.eks]
   count      = 1
-  name       = "aws-load-balancer-controller"
+  name       = "ognjen-load-balancer-controller"
   chart      = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   version    = "1.7.2"
-  namespace  = "load-balancer-service-account"
+  namespace  = "eks-load-balancer-controller"
   create_namespace = true
 
   set {
