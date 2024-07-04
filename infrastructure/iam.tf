@@ -51,7 +51,7 @@ module "iam_github_oidc_provider" {
   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
 }
 
-module "iam-assumable-role-with-oidc" {
+module "iam_assumable_role_with_oidc" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   create_role = true
   role_name = "Ognjen-github-actions-role"
@@ -72,7 +72,7 @@ module "iam_role_for_service_accounts_eks" {
   oidc_providers = {
     github = {
       provider_arn = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["eks-load-balancer-controller:${var.service_account_name}"]
+      namespace_service_accounts = ["eks-load-balancer-controller:load-balancer-controller"]
     }
   }
 }
@@ -83,10 +83,10 @@ module "iam_csi_driver_irsa" {
   role_name = "ognjen-csi-irsa"
 
   attach_ebs_csi_policy = true
-
+  
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn = module.eks.oidc_provider_arn
       namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
     }
   }

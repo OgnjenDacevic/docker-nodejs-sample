@@ -24,7 +24,7 @@ module "eks" {
 
   access_entries = {
     task2-github-access_entries = {
-      principal_arn = module.iam-assumable-role-with-oidc.iam_role_arn
+      principal_arn = module.iam_assumable_role_with_oidc.iam_role_arn
 
       policy_associations = {
         task2-eks-policy = {

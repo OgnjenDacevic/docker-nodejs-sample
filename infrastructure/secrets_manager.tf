@@ -1,7 +1,7 @@
 module "secrets_manager" {
   source = "terraform-aws-modules/secrets-manager/aws"
 
-  name = "ognjen/postgres/secrets"
+  name = "ognjen/bitnami_postgres/secrets"
 
   ignore_secret_changes = true
   secret_string = jsonencode({

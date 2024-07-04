@@ -3,7 +3,7 @@ module "ecr" {
   version = "2.2.1"
 
   repository_name = "ognjen-ecr-repository"
-  repository_read_write_access_arns = [module.iam-assumable-role-with-oidc.iam_role_arn]
+  repository_read_write_access_arns = [module.iam_assumable_role_with_oidc.iam_role_arn]
 
   repository_lifecycle_policy = jsonencode({
     rules = [

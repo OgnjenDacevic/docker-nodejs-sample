@@ -1,5 +1,5 @@
 resource "helm_release" "bitnamipsql" {
-  name       = "ognjen-postgresql"
+  name       = "ognjen-eks-postgresql"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "postgresql"
   version    = "~> 15.5.0"
@@ -27,7 +27,7 @@ resource "helm_release" "bitnamipsql" {
   }
   set {
     name  = "primary.persistence.volumeName"
-    value = "ognjen-pvc"
+    value = "ognjen-eks-persistent-volume"
   }
   set {
     name = "primary.persistence.accessModes[0]"
@@ -44,9 +44,9 @@ resource "helm_release" "bitnamipsql" {
 
   set {
     name  = "serviceAccount.create"
-    value = false
+    value = "false"
   }
-
+  
   set {
     name = "primary.persistence.size"
     value = "8Gi" 
@@ -57,7 +57,7 @@ resource "helm_release" "bitnamipsql" {
 
 resource "kubernetes_storage_class" "eks_storage_class" {
   metadata {
-    name = "ognjen-storage-class"
+    name = "ognjen-eks-storage-class"
   }
   storage_provisioner    = "ebs.csi.aws.com"
   volume_binding_mode    = "WaitForFirstConsumer"
@@ -72,7 +72,7 @@ resource "helm_release" "alb_controller" {
   name       = "ognjen-load-balancer-controller"
   chart      = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
-  version    = "1.7.2"
+  version    = "1.8.1"
   namespace  = "eks-load-balancer-controller"
   create_namespace = true
 
@@ -98,7 +98,7 @@ resource "helm_release" "alb_controller" {
 
   set {
     name  = "serviceAccount.name"
-    value = var.service_account_name
+    value = "load-balancer-controller"
   }
 
   set {
