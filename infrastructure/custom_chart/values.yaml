@@ -1,0 +1,31 @@
+namespace: vegait-training
+label: todo-app
+
+app:
+  image: ghcr.io/ognjendacevic/docker-nodejs-sample
+  tag: v1.1.2
+  port: 3000
+  replicas: 1
+
+service:
+  alb_type: 'external'
+  alb_target_type: 'ip'
+  protocol: TCP
+  port: 80
+  target_port: 3000
+
+ingress:
+  className: alb
+  certificate_arn: arn:aws:acm:eu-central-1:767397957657:certificate/f66b0a7a-6e18-4493-81cb-4e4cde75b0a2
+  host: ognjen-dacevic.epsilon.devops.sitesstage.com
+  path: /
+  path_type: Prefix
+
+configmap:
+  host: ognjen-eks-postgresql
+  port: 5432
+
+secret:
+  user: "cG9zdGdyZXM="
+  password: "cG9zdGdyZXM="
+  db: "ZGI="
